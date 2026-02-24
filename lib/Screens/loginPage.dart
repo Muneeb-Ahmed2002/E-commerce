@@ -1,4 +1,5 @@
 import 'package:e_commerce_mini_app/Providers/authProvider.dart';
+import 'package:e_commerce_mini_app/Screens/homeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.read<AuthProvider>();
     return Scaffold(
       body: SafeArea(
         child: Form(
@@ -32,7 +32,11 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const Text(
                   'E-Commerce\nMini App',
-                  style: loginAppName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                    color: green,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
@@ -80,9 +84,16 @@ class _LoginPageState extends State<LoginPage> {
                 Consumer<AuthProvider>(builder: (context, auth, child) {
                   return ElevatedButton(
                     onPressed: () async {
+                      FocusScope.of(context).unfocus();
                       if (_formKey.currentState!.validate()) {
                         await auth.login(emailController.text.toString(),
                             passwordController.text.toString());
+                        if (auth.isAuthenticated) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomeScreen()));
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
