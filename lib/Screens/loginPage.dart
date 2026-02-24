@@ -1,4 +1,6 @@
+import 'package:e_commerce_mini_app/Providers/authProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../Core/constants.dart';
 import '../Core/validators.dart';
@@ -18,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.read<AuthProvider>();
     return Scaffold(
       body: SafeArea(
         child: Form(
@@ -74,18 +77,23 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      //TODO: Handle Navigation and Login
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: buttonColor,
-                  ),
-                  child: const Text('Login'),
-                ),
+                Consumer<AuthProvider>(builder: (context, auth, child) {
+                  return ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await auth.login(emailController.text.toString(),
+                            passwordController.text.toString());
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: buttonColor,
+                    ),
+                    child: auth.isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Login'),
+                  );
+                }),
               ],
             ),
           ),
