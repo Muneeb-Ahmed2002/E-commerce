@@ -27,8 +27,8 @@ class ProductModel {
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       category: json['category'] ?? '',
       image: json['image'] ?? '',
-      rating: (json['rate'] as num?)?.toDouble(),
-      ratingCount: (json['count'] as num?)?.toInt(),
+      rating: (json['rating']['rate'] as num?)?.toDouble(),
+      ratingCount: (json['rating']['count'] as num?)?.toInt(),
     );
   }
 }

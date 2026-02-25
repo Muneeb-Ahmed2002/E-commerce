@@ -1,10 +1,8 @@
 import 'package:e_commerce_mini_app/Core/constants.dart';
-import 'package:e_commerce_mini_app/Providers/productProvider.dart';
-import 'package:e_commerce_mini_app/Screens/productScreen.dart';
-import 'package:e_commerce_mini_app/Widgets/Retry.dart';
-import 'package:e_commerce_mini_app/Widgets/productCard.dart';
+import 'package:e_commerce_mini_app/Screens/cartScreen.dart';
+import 'package:e_commerce_mini_app/Screens/productsScreen.dart';
+import 'package:e_commerce_mini_app/Screens/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,102 +12,37 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ScrollController _scrollController = ScrollController();
-  bool _showFAB = false;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    Future.microtask(() => context.read<ProductProvider>().fetchProducts());
-    _scrollController.addListener(() {
-      if (_scrollController.offset > 300 && !_showFAB) {
-        setState(() {
-          _showFAB = true;
-        });
-      } else if (_scrollController.offset <= 300 && _showFAB) {
-        setState(() {
-          _showFAB = false;
-        });
-      }
-    });
-  }
+  int _currentIndex = 0;
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
-  }
+  late final List<Widget> _screens = [
+    const ProductsDisplay(),
+    const CartScreen(),
+    const Settings(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-        centerTitle: true,
-        backgroundColor: buttonColor,
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: buttonColor,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.store),
+            label: 'Products',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
       ),
-      body: Consumer<ProductProvider>(builder: (context, products, child) {
-        if (products.isLoading) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                Text('Loading'),
-              ],
-            ),
-          );
-        }
-        if (products.errorMessage != null) {
-          return Retry(
-            icon: const Icon(Icons.sentiment_dissatisfied_outlined),
-            message: 'An Unexpected error occurred',
-            onRetry: () => context.read<ProductProvider>().fetchProducts(),
-          );
-        }
-        if (products.products.isEmpty) {
-          return Retry(
-            icon: const Icon(Icons.sentiment_satisfied_outlined),
-            message: 'No Products Available',
-            onRetry: () => context.read<ProductProvider>().fetchProducts(),
-          );
-        }
-        return RefreshIndicator(
-          onRefresh: products.refreshProducts,
-          child: ListView.builder(
-              controller: _scrollController,
-              itemCount: products.products.length,
-              itemBuilder: (context, index) {
-                final product = products.products[index];
-                return ProductCard(
-                  product: product,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetail(product: product),
-                      ),
-                    );
-                  },
-                );
-              }),
-        );
-      }),
-      floatingActionButton: _showFAB
-          ? FloatingActionButton(
-              onPressed: _scrollToTop,
-              backgroundColor: buttonColor,
-              child: const Icon(Icons.arrow_upward),
-            )
-          : null,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:e_commerce_mini_app/Providers/authProvider.dart';
+import 'package:e_commerce_mini_app/Providers/cartProvider.dart';
 import 'package:e_commerce_mini_app/Providers/productProvider.dart';
 import 'package:e_commerce_mini_app/Screens/loginPage.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,9 @@ void main() {
     ),
     ChangeNotifierProvider(
       create: (context) => ProductProvider(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => CartProvider(),
     ),
   ], child: const MyApp()));
 }

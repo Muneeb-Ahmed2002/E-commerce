@@ -1,5 +1,7 @@
 import 'package:e_commerce_mini_app/Models/productModel.dart';
+import 'package:e_commerce_mini_app/Providers/cartProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../Core/constants.dart';
 
@@ -84,7 +86,14 @@ class ProductDetail extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                // TODO: Implement Add to Cart functionality using CartProvider
+                context.read<CartProvider>().addToCart(product);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Product added to cart'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: buttonColor,
