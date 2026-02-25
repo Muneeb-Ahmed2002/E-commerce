@@ -81,7 +81,7 @@ class ProductDetail extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               product.description,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
+              style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
